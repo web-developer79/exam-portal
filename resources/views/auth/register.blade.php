@@ -50,9 +50,9 @@
                         </div>
                         
                         <div class="form-group scholarshipview {{ $errors->has('dob') ? ' has-error' : '' }}">
-                            <label for="dob" class="col-md-4 control-label">Date of birth</label>
+                            <label for="dob" class="col-md-4 control-label">Date of birth (mm/dd/yyyy)</label>
                             <div class="col-md-6">
-                                <input id="dob" type="date" name="dob" placeholder="Please enter your date of birth" value="{{old('dob')}}" class="form-control form-control-line" required autofocus>
+                                <input id="dob" type="text" name="dob" placeholder="Please enter your date of birth in (mm/dd/yyy) format" value="{{old('dob')}}" class="form-control form-control-line" required autofocus>
                                 @if ($errors->has('dob'))
                                     <span class="help-block">
                                         <strong>{{ $errors->first('dob') }}</strong>
@@ -92,25 +92,40 @@
                         <div class="form-group scholarshipview">
                             <label for="address" class="col-md-4 control-label">Address</label>
                             <div class="col-md-6">
-                                    <input type="text" id="genaddressder"  name="genaddressder" placeholder="Please enter your street address" class="form-control form-control-line"/>
+                                    <input type="text" id="genaddressder"  name="genaddressder" placeholder="Please enter your street address" value="{{ old('genaddressder') }}" class="form-control form-control-line"/>
                             </div>
                         </div>
-                        <div class="form-group scholarshipview">
+                        <div class="form-group scholarshipview {{ $errors->has('city') ? ' has-error' : '' }}">
                             <label for="city" class="col-md-4 control-label">City</label>
                             <div class="col-md-6">
-                                <input type="text" id="city" name="city" placeholder="Please enter your city" class="form-control form-control-line" /> 
+                                <input type="text" id="city" name="city" placeholder="Please enter your city" value="{{ old('city') }}" class="form-control form-control-line" /> 
+								@if ($errors->has('city'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('city') }}</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
-                        <div class="form-group scholarshipview">
+                        <div class="form-group scholarshipview {{ $errors->has('state') ? ' has-error' : '' }}">
                             <label for="state" class="col-md-4 control-label">State</label>
                             <div class="col-md-6">
-                                <input type="text" id="state" name="state" placeholder="Please enter your state" class="form-control form-control-line" /> 
+                                <input type="text" id="state" name="state" placeholder="Please enter your state" value="{{ old('state') }}" class="form-control form-control-line" /> 
+								@if ($errors->has('state'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('state') }}</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
-                        <div class="form-group scholarshipview">
+                        <div class="form-group scholarshipview{{ $errors->has('pincode') ? ' has-error' : '' }}">
                             <label for="pincode" class="col-md-4 control-label">Pin-Code</label>
                             <div class="col-md-6">
-                                <input type="text" id="pincode" name="pincode" placeholder="Please enter your pin-code" class="form-control form-control-line" /> 
+                                <input type="text" id="pincode" name="pincode" placeholder="Please enter your pin-code"  value="{{ old('pincode') }}" class="form-control form-control-line" /> 
+								@if ($errors->has('pincode'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('pincode') }}</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
                         
@@ -149,7 +164,7 @@
                             <label for="password" class="col-md-4 control-label">Password</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
+                                <input id="password" type="password" class="form-control" name="password" value="{{ old('password') }}" required>
 
                                 @if ($errors->has('password'))
                                     <span class="help-block">
@@ -164,10 +179,15 @@
                                 <input type="checkbox" onclick="showPassword()"><label for="password-confirm" class="col-md control-label">&nbsp;Show Password</label>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
                             <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
                             <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" required>
+								@if ($errors->has('password_confirmation'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('password_confirmation') }}</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
 						  {{-- <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
@@ -188,7 +208,7 @@
                             <label for="mobilenumber" class="col-md-4 control-label">Mobile Number<sup>#</sup></label>
 
                             <div class="col-md-6">
-                                <input id="mobilenumber" type="mobilenumber" class="form-control" name="mobilenumber" required>
+                                <input id="mobilenumber" type="mobilenumber" class="form-control" name="mobilenumber"  value="{{ old('mobilenumber') }}" required>
 
                                 @if ($errors->has('mobilenumber'))
                                     <span class="help-block">
@@ -197,10 +217,15 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group scholarshipview">
+                        <div class="form-group scholarshipview{{ $errors->has('altcontactnum') ? ' has-error' : '' }}">
                             <label for="altcontactnum" class="col-md-4 control-label">Alt. Mobile No.</label>
                             <div class="col-md-6">
-                                <input type="text" id="altcontactnum" name="altcontactnum" placeholder="Please enter your alternate mobile number" class="form-control form-control-line" /> 
+                                <input type="text" id="altcontactnum" name="altcontactnum" placeholder="Please enter your alternate mobile number"  value="{{ old('altcontactnum') }}" class="form-control form-control-line" /> 
+								@if ($errors->has('altcontactnum'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('altcontactnum') }}</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
 						<div class="form-group" style="font-size:12px;">

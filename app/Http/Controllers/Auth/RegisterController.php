@@ -63,17 +63,18 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            //'name' => 'required|string|max:255',
             'name' => 'required|regex:/^[a-z\sA-Z]+$/u|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            //'email' => 'required|string|email|max:255',
-            //'password' => 'required|string|min:6|confirmed',
-            //'password' => 'required|confirmed|regex:/^(?=.[0-9])(?=.[!@#$%^&])[a-zA-Z0-9!@#$%^&]{7,15}$/|confirmed',
-            //'password' => 'required|confirmed|regex/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[!@#$%^&])(?=\S*[A-Z])(?=\S*[\d])\S*$/',
+			'schoolName' => 'required|regex:/^[a-z\sA-Z]+$/u|max:255',
+			'dob' => 'required|date_format:m/d/Y',
+			'city' => 'required|regex:/^[a-z\sA-Z]+$/u|max:30',
+			'state' => 'required|regex:/^[a-z\sA-Z]+$/u|max:30',
+			'pincode' => 'required|regex:/^[0-9]{6}$/u|max:6',
+			'email' => 'required|string|email|max:255|unique:users',
             'password'=> array ('required','regex:/^\S*(?=\S{6,14})(?=\S*[a-z])(?=\S*[!@#$%^&])(?=\S*[A-Z])(?=\S*[\d])\S*$/'),
-			//'username' => 'required|string|unique:users',
-			'mobilenumber'=> 'required|unique:users',
+			'password_confirmation' => 'same:password',
+			'altcontactnum' => 'nullable|regex:/^[0-9]{10}+$/u|max:10',
         ]);
+
     }
 
     /**
@@ -87,7 +88,12 @@ class RegisterController extends Controller
 		$otp=$this->generateOTP();
 			if($otp=="") {
 				return redirect('/register')->with('registermessage', 'There is some error in generating OTP, please try after some time.');
-			}			
+			}
+			$dobFormatted = \DateTime::createFromFormat('m/d/Y', $data['dob']);
+			/* Redirect to register page with validation/format problem */
+			if($dobFormatted === false) {
+				return redirect('/register')->with('registermessage', 'There is some error in checking the date of birth format, please re-check and submit the form.');
+			}
 			$userdetail= User::create([
 				'name' => $data['name'],
 				'email' => $data['email'],
@@ -105,9 +111,10 @@ class RegisterController extends Controller
            $userdata['enrollmentid']=$enrollmentid;
            if($data['registeredfor']=='scholarship')
            {				
+			   $dob = $dobFormatted->format('Y-m-d');
                $userdata['prefer_location']=$data['prefer_location'];
                $userdata['schoolName']=$data['schoolName'];
-               $userdata['dob']=$data['dob'];
+               $userdata['dob']=$dob ;
                $userdata['current_class']=$data['current_class'];            
                $userdata['genaddressder']=$data['genaddressder'];
                $userdata['city']=$data['city'];
@@ -417,7 +424,15 @@ class RegisterController extends Controller
 		$data=[];
 		foreach($timeslots as $timeslot)
 		{
-			$data[$i]['id']=$timeslot->id;
+			$timeslotid = $timeslot->id;
+			$slots = $this->getSlotList($timeslotid);
+			$numOfSeats=0;
+			foreach($slots as $slot) 
+				$numOfSeats += $slot["numofseats"];
+			if($numOfSeats == 0)
+				continue;
+			
+			$data[$i]['id']=$timeslotid;
 			$data[$i]['date']=$timeslot->slotdate;
 			$i++;
 		}		
