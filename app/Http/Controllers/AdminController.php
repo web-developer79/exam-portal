@@ -336,6 +336,11 @@ class AdminController extends Controller
 		return redirect('login.html');
 	}
 	
+	private function getStudentDetails() {
+	
+	
+	}
+
 	public function studentlist()
 	{
 		$userlist=User::where('user_type','User')->orderBy('name', 'asc')->get();
@@ -393,7 +398,7 @@ class AdminController extends Controller
 			$studentList[$i]['enrollmentid']=$studentdetail->enrollmentid;
 			$studentList[$i]['schoolname']=$studentdetail->schoolName;
 			$studentList[$i]['altmobile']=$studentdetail->altermobilenumber;
-			
+			$studentList[$i]['prefer_location']=$studentdetail->prefer_location;
 	        $formattedRegDate = \DateTime::createFromFormat($fromFormat, $studentdetail->created_at);
 	        
 	        if($formattedRegDate != false)
@@ -532,27 +537,95 @@ class AdminController extends Controller
 
 	public function exportCsv()
 	{
-		$txt = array("name",'mobilenumber','email','registerfor','paymentstatus');
+
+		$fromFormat='Y-m-d G:i:s';
+		$toFormat='h:ia';
+		$dateFormat='d-M-y';
+
+		$timeslotdtls=TimeSlot::get();
+		$slotdtls=Slot::get();
+		$timeslotlist=$slotlist=array();
+
+		/* Get time slots */
+		foreach($timeslotdtls as $timeslot) {
+		    $timeslotlist[$timeslot->id]=$timeslot->slotdate;
+		}
+
+		/* Get Slots */
+		foreach($slotdtls as $slot){
+		    
+    	    $formattedFromTime = \DateTime::createFromFormat($fromFormat, "2018-11-14 $slot->fromtime")->format($toFormat);
+            $formattedToTime = \DateTime::createFromFormat($fromFormat, "2018-11-14 $slot->totime")->format($toFormat);
+		    $slotlist[$slot->id] = array(
+		                "timeslotid"=>$slot->timeslotid,
+		                "fromtime"=>$slot->fromtime,
+		                "totime" => $slot->totime,
+		                "formattedtime" => $formattedFromTime."-".$formattedToTime
+		                );
+		}
+
+		$txt = array('Name','Mobile Number','Enrollment No.','School Name','Location', 'Registration Date', 
+					'Class', 'Exam Date', 'Slot Booked', 'Verification Status', 'Payment Status');
 		$path= base_path().'\storage\app\public\csv\student.csv'; 
 		$myfile = fopen($path, "w") or die("Unable to open file 1!");
+		
 		if(fputcsv($myfile, $txt) == true) {			
-			$userlist=User::where('user_type','User')->get();
+			$userlist=User::where('user_type','User')->orderBy('name', 'asc')->get();
+
 			foreach($userlist as $userlist1)
 			{	
-				$studentdetail=StudentDetail::where('user_id',$userlist1->id)->first();					
+				$stdntMdl = DB::table('student_details')
+				->join('usertimeslots', 'student_details.user_id', '=', 'usertimeslots.userid')
+				->where('student_details.user_id', $userlist1->id);
+			
+				if($stdntMdl->count() == 0)
+					continue;
+				$studentdetail=$stdntMdl->first();
+
 				$name=$userlist1->name;
 				$mobilenum=$userlist1->mobilenumber;
+				if($studentdetail->altermobilenumber!="")
+					$mobilenum .= ", ".$studentdetail->altermobilenumber;
+
+				$enrollmentid=$studentdetail->enrollmentid;
+				$schoolname=$studentdetail->schoolName;
+				$preferlocation=ucfirst($studentdetail->prefer_location);
+				$class=$studentdetail->current_class;
+
+				/* Registration Date */
+				$formattedRegDate = \DateTime::createFromFormat($fromFormat, $studentdetail->created_at);
+				if($formattedRegDate != false)
+					$formattedRegDate=$formattedRegDate->format($dateFormat);
+				else
+					$formattedRegDate=$studentdetail->created_at;
+				$regdate=$formattedRegDate;
+
+				/* Exam Date & time */
+				$examdate=$examtime= "N.A.";
+				$timeslotid=null;
+				$slotid=$studentdetail->slotid;
+				if(array_key_exists($slotid, $slotlist)) {
+					$timeslotid=$slotlist[$slotid]["timeslotid"];
+					$examtime= $slotlist[$slotid]["formattedtime"];
+				}
+				
+				if($timeslotid !=null){
+					$examdate=\DateTime::createFromFormat('Y-m-d', $timeslotlist[$timeslotid])->format($dateFormat);
+				}
+
 				$email=$userlist1->email;			
 				$registerfor=$studentdetail->registeredfor;
+
+				$paymentstatus='Unpaid';
+				$verificationstatus = 'Not Verified';
 				if($studentdetail->ispaymentdone=='1')
-				{
-					$paymentstatus='1';					
-				}
-				else
-				{
-					$paymentstatus='0';
-				}
-				$data_mod1 = array($name,$mobilenum,$email,$registerfor,$paymentstatus);
+					$paymentstatus='Paid';					
+
+				if($userlist1->isverified=='1')
+					$verificationstatus='Verified';
+
+				$data_mod1 = array($name,$mobilenum, $enrollmentid, $schoolname, $preferlocation, $regdate,
+							$class, $examdate, $examtime, $verificationstatus, $paymentstatus);
 				fputcsv($myfile, $data_mod1);
 				unset($name);
 				unset($mobilenum);
