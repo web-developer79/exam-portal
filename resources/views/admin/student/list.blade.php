@@ -31,6 +31,7 @@
                     <th> Mobile No</th>
                     <th> Enrollment No.</th>
                     <th> School Name</th>
+					<th> Location </th>
                     <th> Registration date</th>
                     <th> Class</th>
                     <th> Exam Scheduled</th>
@@ -52,7 +53,8 @@
                     
                     <td>{{$stud['enrollmentid']}}</td>
                     <td>{{$stud['schoolname']}}</td>
-                    <td>{{$stud['regdate']}}</td>
+                    <td>{{ucfirst($stud['prefer_location'])}}</td>
+					<td>{{$stud['regdate']}}</td>
                     <td>{{$stud['class']}}</td>
                     <td>{{$stud['examdate']}}<br/> {{$stud['examtime']}}</td>
                     
