@@ -1,0 +1,36 @@
+[33mfa594a4[m Links styling
+[33m74337c3[m Modification in design of registration page
+[33m07cf6db[m otp fix
+[33m29e49a2[m update phonenumber
+[33mffd4dae[m Layout of Student registration
+[33m2f64407[m update link
+[33mdd99f6e[m verify url
+[33ma8a3f9f[m OTP functionality
+[33m7d521b0[m Layout of student panel
+[33mb7055ba[m admin student list and logout
+[33md0f493e[m Completed navigation & icons for admin panel
+[33m9038175[m Icons & navigation set for QuestionSet list
+[33me627a64[m Navigation on the main pages
+[33m0e01af8[m Added changes in the student panel
+[33m321905a[m otp
+[33m491b198[m Added the student template
+[33m75847e4[m Merge branch 'himanshu-master' of https://github.com/web-developer79/exam-questionaire into himanshu-master
+[33mfacd354[m Question Paper
+[33m1ad4a89[m Change the call of view question set
+[33mdde4276[m AdminTemplate: Cleanup and set the dashboard
+[33m200a463[m Questionset listing functionality
+[33m800c7df[m Merge branch 'himanshu-master' of https://github.com/web-developer79/exam-questionaire into himanshu-master
+[33m4f808ae[m form url dynamic
+[33m11d436b[m Added the question set list view
+[33mfd10d22[m Questionset update
+[33m46c78f2[m Questionset save
+[33mdad6fdb[m Add the question view and updated the question-set
+[33mc77a9eb[m Layout of question set
+[33me93f165[m updated admin routes
+[33m98336d9[m Dashboard question set
+[33macb4ff3[m Layout of admin panel
+[33ma74a495[m Adding the admin dashboard
+[33m8de1df7[m Admin: Add the middleware for admin access
+[33m593880d[m Syncing the project
+[33m1e496d9[m laravel setup
+[33mdf208ab[m Initial commit
