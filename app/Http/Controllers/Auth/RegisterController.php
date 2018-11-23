@@ -94,6 +94,7 @@ class RegisterController extends Controller
 			if($dobFormatted === false) {
 				return redirect('/register')->with('registermessage', 'There is some error in checking the date of birth format, please re-check and submit the form.');
 			}
+
 			$userdetail= User::create([
 				'name' => $data['name'],
 				'email' => $data['email'],
@@ -432,8 +433,17 @@ class RegisterController extends Controller
 			if($numOfSeats == 0)
 				continue;
 			
+			$slotDateTime = \DateTime::createFromFormat('Y-m-d', $timeslot->slotdate);
+			$todayDateTime = new \DateTime("now");
+			$tmrwDateTime = $todayDateTime->add(new \DateInterval('P1D'));
+			$interval=$slotDateTime->diff($todayDateTime);
+			
+			if($tmrwDateTime > $slotDateTime) 
+				continue;
+
 			$data[$i]['id']=$timeslotid;
-			$data[$i]['date']=$timeslot->slotdate;
+			$data[$i]['date']=$slotDateTime->format('m/d/Y');
+			$data[$i]['days']=$interval->days;
 			$i++;
 		}		
 		
