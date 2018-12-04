@@ -42,7 +42,22 @@
                 <li><a class="" href="{{ url('admin/timeslot/list') }}">List</a></li>
               </ul>
             </li>
-        
+
+          <li class="sub-menu">
+            <a href="javascript:;" class="">
+              <i class="icon_menu-square_alt2"></i>
+              <span>Result</span>
+              <span class="menu-arrow arrow_carrot-right"></span>
+            </a>
+            <ul class="sub">
+              <li>
+                <a class="" href="{{ url('admin/result/upload') }}">Upload</a>
+              </li>
+              <li>
+                <a class="" href="{{ url('admin/result/view') }}">View</a>
+              </li>
+            </ul>
+          </li>
           
 
         </ul>

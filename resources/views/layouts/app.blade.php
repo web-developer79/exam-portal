@@ -45,6 +45,9 @@
                         <!-- Authentication Links -->
                         @guest
                             <!-- <li><a href="{{ route('login') }}">Login</a></li> -->
+                      <li>
+                        <a href="{{ url('result') }}">View Result</a>
+                      </li>      
                             <li><a href="{{ url('payment-initiate') }}">Make Payment</a></li>
                             <li><a href="{{ route('register') }}">Register</a></li>
                         @else

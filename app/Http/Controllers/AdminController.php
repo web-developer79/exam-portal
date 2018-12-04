@@ -13,6 +13,7 @@ use App\User;
 use App\Studentquestionpaper;
 use App\Studentanswer;
 use App\StudentDetail;
+use App\StudentResult;
 use App\Slot;
 use App\Timeslot;
 use App\Usertimeslot;
@@ -849,4 +850,83 @@ class AdminController extends Controller
 		, 200);
 		
 	}
+
+	public function resultupload()
+    {
+        return view('admin.result.manage');
+    }
+
+	public function resultsave(Request $request) {
+	
+		$processedRecordsCount = $unProcessedReordsCount = 0;
+		
+		$path = $request->file('csv_file')->getRealPath();
+		$data = array_map('str_getcsv', file($path));
+		$headerRow = array_flip($data[0]);
+
+		// cut the header row
+		$rowData = array_slice($data, 1);
+
+		foreach($rowData as $row) {
+			
+			$enrollmentid = $row[$headerRow['EnrollmentId']];
+
+			if($enrollmentid == '') {
+				 $unProcessedReordsCount ++;
+				 continue;
+			}
+
+			StudentResult::updateOrCreate(
+					['enrollmentid' => $enrollmentid],
+					['mobilenumber' => $row[$headerRow['MobileNumber']], 'studentname' => $row[$headerRow['StudentName']],
+					'schoolname' => $row[$headerRow['SchoolName']], 'class' =>  $row[$headerRow['Class']], 
+					'rank' =>  $row[$headerRow['Rank']], 'examlocation' =>  $row[$headerRow['ExamLocation']], 
+					'examdate' =>  $row[$headerRow['ExamDate']]] 
+			);
+
+			$processedRecordsCount ++;
+		
+		}
+
+		$message  = "Status: Total Records: ".($processedRecordsCount + $unProcessedReordsCount);
+		$message .= ", Processed: $processedRecordsCount, Error - $unProcessedReordsCount";
+		return redirect('/admin/result/view')->with('resultlistmessage', $message);
+	}
+	
+	public function resultlist($message="") {
+		
+		$studentresultlist=StudentResult::get();
+		
+		$i=0;
+		$data=[];
+
+		foreach($studentresultlist as $studentresult)
+		{
+			//$noofques= Question::where('questionset_id',$quesset1->id)->count();
+			$data[$i]['id']=$studentresult->id;
+			$data[$i]['enrollmentid']=$studentresult->enrollmentid;
+			$data[$i]['mobilenumber']=$studentresult->mobilenumber;
+			$data[$i]['studentname']=$studentresult->studentname;
+			$data[$i]['schoolname']=$studentresult->schoolname;
+			$data[$i]['class']=$studentresult->class;
+			$data[$i]['rank']=$studentresult->rank;
+			$data[$i]['examlocation']=$studentresult->examlocation;
+			$data[$i]['examdate']=$studentresult->examdate;
+			$i++;
+		}
+		
+		return view('admin.result.list')->with('studentresults', $data) ;
+
+	}
+
+	 public function resultdelete($id, Request $request){
+	 
+		if(!StudentResult::where('id', $id)->exists())
+			return redirect()->back()->with('resultlistmessage', "Result details does not exists to be deleted.");
+		else {
+			StudentResult::where('id', $id)->delete();
+			return redirect()->back()->with('resultlistmessage', "Result details deleted successfully");
+		}
+		 
+	 }
 }
