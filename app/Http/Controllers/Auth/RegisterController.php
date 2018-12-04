@@ -14,6 +14,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\DB;
 use App\StudentDetail;
 use App\LastEnrollment;
+use App\StudentResult;
 use App\Timeslot;
 use App\Slot;
 use App\Usertimeslot;
@@ -764,11 +765,14 @@ class RegisterController extends Controller
          $data=array();
         return view('payment-initiate')->with('data', $data);
     }
-    
+
+	public function viewresult(){
+         $data=array();
+        return view('view-result')->with('data', $data);
+    }
+
     protected function getUserDetails($enrollmentid, $mobilenumber){
 
-        //TODO: Replace the actual model
-        
         $stdntDtlMdl=DB::table('student_details')
             ->join('users', 'student_details.user_id', '=', 'users.id')
             ->where([
@@ -805,6 +809,33 @@ class RegisterController extends Controller
 		, 200);
     }
     
+	public function fetchresult($enrollmentid, $mobilenumber, Request $request){
+
+        $stdntResMdl=StudentResult::where([
+                            ['enrollmentid', '=', $enrollmentid],
+                            ['mobilenumber', '=', $mobilenumber]
+                            ]);
+
+        if($stdntResMdl->count()<=0) {
+            return response()->json(
+			    array(
+				    'message'=> "Mis-match between the mobile number and enrollment-id",
+				)
+		        , 201);
+        }
+        
+        $studentResult=$stdntResMdl->first();
+
+        $data = array('fullname' => $studentResult->studentname, 'schoolname' => $studentResult->schoolname,
+                        'class' => $studentResult->class, 'rank' => $studentResult->rank,
+						'examlocation' => $studentResult->examlocation, 'examdate' => $studentResult->examdate);
+        return response()->json(
+			array(
+				'details'=> $data,
+				)
+		, 200);
+    }
+
     public function paymentprocess(Request $request){
         
         $enrollmentid=$request->enrollmentid;

@@ -32,6 +32,9 @@ Route::post('payment-process', 'Auth\RegisterController@paymentprocess');
 Route::get('/payment/{id}', 'Auth\RegisterController@payment');
 Route::post('/welcome', 'Auth\RegisterController@paymentstatus');
 Route::post('/payment-cancel',  'Auth\RegisterController@paymentcancel');
+Route::get('/result', 'Auth\RegisterController@viewresult');
+Route::get('fetchresult/{enrollmentid}/{mobile}', 'Auth\RegisterController@fetchresult');
+
 
 Route::group(array('middleware' => ['auth']), function ()
   {
@@ -99,6 +102,12 @@ Route::group(array('prefix'=>'admin','middleware' => ['auth', 'admin']), functio
      Route::get('slot/list/{id}', 'AdminController@slotlist');
      Route::post('slot/save', 'AdminController@slotsave');
      Route::get('transaction/list/{id}', 'AdminController@getTransactions');
+     Route::get('result/upload', 'AdminController@resultupload');
+	 Route::get('result/view', 'AdminController@resultlist');
+     Route::post('result/save', 'AdminController@resultsave');
+	 Route::get('result/delete/{id}', 'AdminController@resultdelete');
+
+
   });
   
  
