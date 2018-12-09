@@ -826,9 +826,51 @@ class RegisterController extends Controller
         
         $studentResult=$stdntResMdl->first();
 
+		$message = "";
+		if($studentResult->isbookingdone == 1)
+			$message = "Your appointment has been already been scheduled with us.";
+
         $data = array('fullname' => $studentResult->studentname, 'schoolname' => $studentResult->schoolname,
                         'class' => $studentResult->class, 'rank' => $studentResult->rank,
-						'examlocation' => $studentResult->examlocation, 'examdate' => $studentResult->examdate);
+						'examlocation' => $studentResult->examlocation, 'examdate' => $studentResult->examdate,
+						'isbookingdone' => $studentResult->isbookingdone, 'bookingmessage' => $message);
+        return response()->json(
+			array(
+				'details'=> $data,
+				)
+		, 200);
+    }
+
+	public function bookappointment($enrollmentid, $mobilenumber, Request $request){
+
+        $stdntResMdl=StudentResult::where([
+                            ['enrollmentid', '=', $enrollmentid],
+                            ['mobilenumber', '=', $mobilenumber]
+                            ]);
+
+        if($stdntResMdl->count()<=0) {
+            return response()->json(
+			    array(
+				    'message'=> "Mis-match between the mobile number and enrollment-id",
+				)
+		        , 201);
+        }
+
+		$studentResult=$stdntResMdl->first();
+
+		$message= "Thank you for successfully booking an appointment. Our expertise team will contact you shortly.";
+		
+		if($studentResult->isbookingdone == 0) {
+		
+			$stdntResMdl->update(['isbookingdone'=>1]);
+			$this->sendSMS($mobilenumber, $message);
+
+			$this->sendbookingtogoogle($enrollmentid, $mobilenumber, $studentResult->studentname, $studentResult->schoolname,
+					$studentResult->class, $studentResult->rank, $studentResult->examlocation);
+		}
+		
+        $data = array('bookingmessage' => $message);
+
         return response()->json(
 			array(
 				'details'=> $data,
@@ -861,4 +903,58 @@ class RegisterController extends Controller
         $encrypted = Crypt::encrypt($txnid);
 		return redirect("/payment/$encrypted");
     }
+
+	public function sendbookingtogoogle($enrollmentid, $mobilenumber, $studentname, $schoolname, $class, $rank, $examlocation) {
+	
+		// http://spreadsheets.google.com/formResponse?formkey=dFdYSTlzUVJsSomeReallyLongKeyGoesHereqemU2YUE6MA..
+		//Name "entry.0.single" 
+		//Email is "entry.1.single"
+		//Phone is "entry.2.single"
+		//Comment is "entry.3.single"
+		//IP address is "entry.4.single"
+		$formKey = ""; 
+	    $url = "http://spreadsheets.google.com/formResponse?formkey=$formKey";
+		
+		// Create post array to send results to Google Spreadsheets
+		$fields = array(
+                           'entry.0.single'=>urlencode($enrollmentid),
+                           'entry.1.single'=>urlencode($mobilenumber),
+                           'entry.2.single'=>urlencode($studentname),
+                           'entry.3.single'=>urlencode($schoolname),
+						   'entry.4.single'=>urlencode($class),
+                           'entry.5.single'=>urlencode($rank),
+                           'entry.6.single'=>urlencode($examlocation),
+                           'submit'=>'submit'
+                   );
+    
+	  // Begining of code for posting to Google Spreadsheet
+	  $fields_string = '';
+	  
+	  //url-ify the data for the POST
+	  foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+	  
+	  //rtrim($fields_string,"& ");
+	  
+	  $fields_string = substr($fields_string, 0, strlen($fields_string)-1); 
+	  
+	  $result = "Fields_String: [" . $fields_string . "]<br />";
+   
+	  //set POST variables for Google Spreadsheets
+	  //open connection
+	  $ch = curl_init();
+   
+	  //set the url, number of POST vars, POST data
+	  curl_setopt($ch,CURLOPT_URL,$url);
+	  curl_setopt($ch,CURLOPT_POST,count($fields));
+	  curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
+	  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	  curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+    
+	  //execute post
+	  $result .= "Curl Results: [" . curl_exec($ch) . "]<br />";
+   
+	  //close connection
+	 curl_close($ch);
+	
+	}
 }

@@ -34,7 +34,7 @@ Route::post('/welcome', 'Auth\RegisterController@paymentstatus');
 Route::post('/payment-cancel',  'Auth\RegisterController@paymentcancel');
 Route::get('/result', 'Auth\RegisterController@viewresult');
 Route::get('fetchresult/{enrollmentid}/{mobile}', 'Auth\RegisterController@fetchresult');
-
+Route::get('bookappointment/{enrollmentid}/{mobile}', 'Auth\RegisterController@bookappointment');
 
 Route::group(array('middleware' => ['auth']), function ()
   {

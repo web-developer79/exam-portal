@@ -32,6 +32,7 @@
                     <th> Rank</th>
                     <th> Exam Center</th>
                     <th> Exam Date</th>
+					<th> Appointment Status</th>
                     <th> Delete</th>
                   </tr>
                   
@@ -45,7 +46,7 @@
                     <td>{{ $studres['rank'] }}</td>
                     <td>{{ $studres['examlocation'] }}</td>
                     <td>{{ $studres['examdate'] }}</td>
-                    
+                    <td>{{ $studres['isbookingdone'] == 1? "Booked":"-" }}</td>
                     <td><a onclick="return confirmDelete();" class="btn btn-danger" href="{{url ('admin/result/delete/'.$studres['id'])}}">
                               <i class="icon_minus_alt2"></i>
                         </a>

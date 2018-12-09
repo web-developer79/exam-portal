@@ -40,55 +40,52 @@
                             </div>
                         </div>
                         
+                        <div class="form-group viewdetails">
+                            <label class="col-md-12 ">Congratulations <span id="fullname"></span>!!! <br/> 
+							Visit to MindPro Academy for detail analysis of performance and for career counselling.</label>
+                        </div>
+
 						<div class="form-group viewdetails">
-                            <label for="enrollmentid" class="col-md-4 control-label">Enrollment-ID</label>
-                            <div class="col-md-6">
-                                <span id="vwenrollmentid"></span>
-                            </div>
-                        </div>
-
-                         <div class="form-group viewdetails">
-                            <label for="name" class="col-md-4 control-label">Full Name</label>
-                            <div class="col-md-6">
-                                <span id="fullname"></span>
-                            </div>
+                            <label class="col-md-4 control-label" style="font-weight:normal;" >Enrollment-ID</label>
+							<label class="col-md-6 control-label" style="text-align:left;" id="vwenrollmentid"></label>
                         </div>
 
                         <div class="form-group viewdetails">
-                            <label for="class" class="col-md-4 control-label">Class</label>
-                            <div class="col-md-6">
-                                <span id="class"></span>
-                            </div>
+                            <label for="class" class="col-md-4 control-label" style="font-weight:normal;">Class</label>
+                            <label class="col-md-6 control-label" style="text-align:left;"  id="class"></label>
                         </div>
 
                         <div class="form-group viewdetails">
-                            <label for="schoolname" class="col-md-4 control-label">School Name</label>
-                            <div class="col-md-6">
-                                <span id="schoolname"></span>
-                            </div>
+                            <label for="schoolname" class="col-md-4 control-label" style="font-weight:normal;" >School Name</label>
+                            <label class="col-md-6 control-label" style="text-align:left;"  id="schoolname"></label>
                         </div>
                         
+						{{-- 
                         <div class="form-group viewdetails">
-                            <label for="examdate" class="col-md-4 control-label">Exam Date</label>
-                            <div class="col-md-6">
-                                <span id="examdate"></span>
-                            </div>
+                            <label for="examdate" class="col-md-4 control-label" style="font-weight:normal;" >Exam Date</label>
+                            <label class="col-md-6 control-label" style="text-align:left;"  id="examdate"></label>
                         </div>
-						
+						--}}
 						<div class="form-group viewdetails">
-                            <label for="examlocation" class="col-md-4 control-label">Exam Location</label>
-                            <div class="col-md-6">
-                                <span id="examlocation"></span>
-                            </div>
+                            <label for="examlocation" class="col-md-4 control-label" style="font-weight:normal;" >Exam Location</label>
+                            <label class="col-md-6 control-label" style="text-align:left;"  id="examlocation"></label>
+							
                         </div>
                         <div class="form-group viewdetails">
-                            <label for="rank" class="col-md-4 control-label">Rank</label>
-                            <div class="col-md-6">
-                                <span id="rank"></span>
-                            </div>
+                            <label for="rank" class="col-md-4 control-label" style="font-weight:normal;" >Rank</label>
+                            <label class="col-md-6 control-label" style="text-align:left;"  id="rank"></label>
                         </div>
 
-                       
+						<div class="form-group viewdetails">
+                            <label class="col-md-4 control-label" style="font-weight:normal;" ></label>
+                            <button type="submit" class="btn btn-primary" id="bookappointment" onclick="bookAppointment();">
+                                    Book Appointment
+                            </button>
+							
+							<label class="col-md-12 " id="bookAppointmentMessage"></label>
+                        </div>
+						
+
                        </div> 
                      
                 </div>
@@ -108,6 +105,32 @@
         $('.viewdetails').hide();
 		$("#enrollmentid").val("");
 		$("#mobilenumber").val("");
+	}
+
+	function bookAppointment() {
+
+        var enrollmentid=$("#enrollmentid").val();
+        var mobile=$("#mobilenumber").val();
+        if(enrollmentid == '' || mobile==''){
+            alert("Please provide the enrollment-id and mobile number to get details");
+            return;
+        }
+        
+         $.ajax({
+            type:'GET',
+            url:"{{url('/bookappointment')}}" + "/"+enrollmentid+"/"+mobile,
+            data:'_token = <?php echo csrf_token() ?>',
+            success:function(data, textStatus, xhr){
+                if(xhr.status==200){
+					var details=data.details;
+					$('#bookAppointmentMessage').show();
+					$('#bookappointment').hide();
+                    $("#bookAppointmentMessage").text(details.bookingmessage);
+                } else if(xhr.status==201) {
+                    alert(data.message);
+                }
+            }
+         });
 	}
 
     function fetchDetails(){
@@ -136,6 +159,16 @@
 					$("#examdate").text(details.examdate);
 					$("#examlocation").text(details.examlocation);
                     $("#vwenrollmentid").text(enrollmentid);
+					$("#bookAppointmentMessage").text(details.bookingmessage);
+
+					if(details.isbookingdone == 1) {
+						$('#bookAppointmentMessage').show();
+						$('#bookappointment').hide();
+					} else {
+						$('#bookAppointmentMessage').hide();
+						$('#bookappointment').show();
+					}
+					
                 } else if(xhr.status==201) {
                     alert(data.message);
                 }
