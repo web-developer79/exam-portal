@@ -895,14 +895,14 @@ class AdminController extends Controller
 	
 	public function resultlist($message="") {
 		
-		$studentresultlist=StudentResult::get();
+		$studentresultlist=StudentResult::orderBy('examlocation', 'asc')
+							->orderBy('isbookingdone', 'desc')->get();
 		
 		$i=0;
 		$data=[];
 
 		foreach($studentresultlist as $studentresult)
 		{
-			//$noofques= Question::where('questionset_id',$quesset1->id)->count();
 			$data[$i]['id']=$studentresult->id;
 			$data[$i]['enrollmentid']=$studentresult->enrollmentid;
 			$data[$i]['mobilenumber']=$studentresult->mobilenumber;
@@ -912,6 +912,7 @@ class AdminController extends Controller
 			$data[$i]['rank']=$studentresult->rank;
 			$data[$i]['examlocation']=$studentresult->examlocation;
 			$data[$i]['examdate']=$studentresult->examdate;
+			$data[$i]['isbookingdone']=$studentresult->isbookingdone;
 			$i++;
 		}
 		
