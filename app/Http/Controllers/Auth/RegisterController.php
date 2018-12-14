@@ -858,7 +858,7 @@ class RegisterController extends Controller
 
 		$studentResult=$stdntResMdl->first();
 
-		$message= "Thank you for successfully booking an appointment. Our expertise team will contact you shortly.";
+		$message= "Thank you for successfully booking an appointment. MindPro team will contact you shortly.";
 		
 		if($studentResult->isbookingdone == 0) {
 		
