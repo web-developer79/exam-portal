@@ -41,8 +41,7 @@
                         </div>
                         
                         <div class="form-group viewdetails">
-                            <label class="col-md-12 ">Congratulations <span id="fullname"></span>!!! <br/> 
-							Visit to MindPro Academy for detail analysis of performance and for career counselling.</label>
+                            <label class="col-md-12 ">Congratulations <span id="fullname"></span>!!! </label>
                         </div>
 
 						<div class="form-group viewdetails">
@@ -75,6 +74,9 @@
                             <label for="rank" class="col-md-4 control-label" style="font-weight:normal;" >Rank</label>
                             <label class="col-md-6 control-label" style="text-align:left;"  id="rank"></label>
                         </div>
+						<div class="form-group viewdetails">
+							<label class="col-md-12 " >Visit to MindPro Academy for detail analysis of performance and for career counselling.</label>
+						</div>
 
 						<div class="form-group viewdetails">
                             <label class="col-md-4 control-label" style="font-weight:normal;" ></label>
